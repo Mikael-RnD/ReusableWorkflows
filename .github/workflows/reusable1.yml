@@ -46,6 +46,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # RELEASE_BRANCHES: main,master
           WITH_V: false
+
+      - name: Automatic Releases
+        id: automatic_release
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          # GitHub secret token
+          repo_token: ${{ secrets.GITHUB_TOKEN}}
+              # Git tag (for automatic releases)
+          automatic_release_tag: ${{ steps.bump_tag.outputs.new_tag }}
+          prerelease: ${{ github.event_name != 'push' }}
+      - run: echo ${{ steps.automatic_release.outputs.upload_url }}
+      
       
       
   # This workflow contains a single job called "build"
