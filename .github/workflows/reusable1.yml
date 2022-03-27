@@ -4,14 +4,21 @@ name: Reusable 1
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # Triggers the workflow on call from other repository
   workflow_call:
-    
+    inputs:
+      orchestratorFolder:
+        required: true
+        type: string
+      orchestratorTenant:
+        required: true
+        type: string
+    secrets:
+      orchestratorUsername:
+        required: true
+      orchestratorPassword:
+        required: true
 env:
-  # UiPath account stored as a Secret in Github
-  UIPATH_ACCOUNT: ${{ secrets.UIPATH_ACCOUNT }}
-  # Password for the UiPath account stored as a Secret
-  UIPATH_PASSWORD: ${{ secrets.UIPATH_PASSWORD }}
   # URL to the Orchestrator instance
   ORCHESTRATOR_URL: "https://cloud.uipath.com/hppcntv/"
   # Orchestrator tenant to deploy the project to
@@ -59,8 +66,8 @@ jobs:
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
           orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
           orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
-          orchestratorUsername: ${{ env.UIPATH_ACCOUNT }}
-          orchestratorPassword: ${{ env.UIPATH_PASSWORD }}
+          orchestratorUsername: ${{ secrets.orchestratorUsername }}
+          orchestratorPassword: ${{ secrets.orchestratorPassword }}
       
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v2
