@@ -7,6 +7,9 @@ on:
   # Triggers the workflow on call from other repository
   workflow_call:
     inputs:
+      orchestratorUrl:
+        required: true
+        type: string
       orchestratorFolder:
         required: true
         type: string
@@ -14,17 +17,12 @@ on:
         required: true
         type: string
     secrets:
-      orchestratorUsername:
+      orchestratorApplicationId:
         required: true
-      orchestratorPassword:
+      orchestratorApplicationSecret:
         required: true
-env:
-  # URL to the Orchestrator instance
-  ORCHESTRATOR_URL: "https://cloud.uipath.com/hppcntv/"
-  # Orchestrator tenant to deploy the project to
-  ORCHESTRATOR_TENANT: "Shared"
-  # Folder in UiPath Orchestrator, for Modern Folder use
-  ORCHESTRATOR_FOLDER: "TestFolder"
+      orchestratorApplicationScope:
+        required: true
 
 jobs:
   tag:
@@ -58,8 +56,6 @@ jobs:
           prerelease: ${{ github.event_name != 'push' }}
       - run: echo ${{ steps.automatic_release.outputs.upload_url }}
       
-      
-      
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
@@ -75,9 +71,9 @@ jobs:
       - uses: Mikael-RnD/UiPath-Pack-Analyze@main
         if: ${{ github.event_name == 'push' }}
         with:
-          orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
-          orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
-          orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ inputs.OrchestratorTenant }}
+          orchestratorFolder: ${{ inputs.OrchestratorFolder }}
           orchestratorUsername: ${{ secrets.orchestratorUsername }}
           orchestratorPassword: ${{ secrets.orchestratorPassword }}
       
@@ -144,6 +140,7 @@ jobs:
           # Destination path
           path: ${{github.workspace}} # optional
           
+      # TODO: Find out how to use the upload URL to add packages?
       - run: echo ${{ needs.tag.outputs.release_upload_url }}
       
 
