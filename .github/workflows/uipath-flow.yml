@@ -78,6 +78,7 @@ jobs:
           orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
           orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
           orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ secrets.organizationId }} 
           projectVersion: ${{ needs.tag.outputs.release_tag }}
       
       # Upload packages as build artifacts to be handled by deploy job
@@ -113,6 +114,7 @@ jobs:
           orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
           orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
           orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ secrets.organizationId }} 
   
   failed_build:
     runs-on: ubuntu-latest
