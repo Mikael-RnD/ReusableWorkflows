@@ -13,15 +13,16 @@ on:
       orchestratorFolder:
         required: true
         type: string
+    secrets:
       orchestratorTenant:
         required: true
-        type: string
-    secrets:
       orchestratorApplicationId:
         required: true
       orchestratorApplicationSecret:
         required: true
       orchestratorApplicationScope:
+        required: true
+      organizationId:
         required: true
 
 jobs:
@@ -68,14 +69,16 @@ jobs:
       - uses: Mikael-RnD/UiPath-Setup@main
       # - run: choco install UiPath.CLI --version 1.0.7985.19721 --source https://www.myget.org/F/uipath-dev/api/v2
       
-      - uses: Mikael-RnD/UiPath-Pack-Analyze@main
+      - uses: Mikael-RnD/UiPath-Pack-Analyze@app-id-auth
         if: ${{ github.event_name == 'push' }}
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ inputs.OrchestratorTenant }}
+          orchestratorTenant: ${{ secrets.OrchestratorTenant }}
           orchestratorFolder: ${{ inputs.OrchestratorFolder }}
-          orchestratorUsername: ${{ secrets.orchestratorUsername }}
-          orchestratorPassword: ${{ secrets.orchestratorPassword }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
+          projectVersion: ${{ needs.tag.outputs.release_tag }}
       
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v2
@@ -101,14 +104,15 @@ jobs:
       # - uses: Mikael-RnD/UiPath-Setup@main
       
       # .nupkg packages are deployed to UiPath Orchestrator
-      # - name: UiPath Deploy
-      #  uses: Mikael-RnD/UiPath-Deploy@main
-      #  with:
-      #    orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
-      #    orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
-      #    orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
-      #    orchestratorUsername: ${{ env.UIPATH_ACCOUNT }}
-      #    orchestratorPassword: ${{ env.UIPATH_PASSWORD }}
+      - name: UiPath Deploy
+        uses: Mikael-RnD/UiPath-Deploy@app-id-auth
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ secrets.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
   
   failed_build:
     runs-on: ubuntu-latest
