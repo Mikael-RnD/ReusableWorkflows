@@ -43,7 +43,6 @@ jobs:
         uses: anothrNick/github-tag-action@1.36.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # RELEASE_BRANCHES: main,master
           WITH_V: false
 
       - name: Automatic Releases
@@ -64,10 +63,9 @@ jobs:
     needs: tag
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       - uses: Mikael-RnD/UiPath-Setup@main
-      # - run: choco install UiPath.CLI --version 1.0.7985.19721 --source https://www.myget.org/F/uipath-dev/api/v2
       
       - uses: Mikael-RnD/UiPath-Pack-Analyze@app-id-auth
         with:
@@ -105,6 +103,7 @@ jobs:
       
       # .nupkg packages are deployed to UiPath Orchestrator
       - name: UiPath Deploy
+        if: ${{ github.event_name == 'push' }}
         uses: Mikael-RnD/UiPath-Deploy@app-id-auth
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
