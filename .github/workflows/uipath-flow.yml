@@ -32,7 +32,7 @@ jobs:
       release_tag: ${{ steps.bump_tag.outputs.new_tag }}
       release_upload_url: ${{ steps.automatic_release.outputs.upload_url }}
     steps: 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: '0'
         
@@ -82,7 +82,7 @@ jobs:
           projectVersion: ${{ needs.tag.outputs.release_tag }}
       
       # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: ${{ github.workspace }}/output
           if-no-files-found: error
@@ -94,7 +94,7 @@ jobs:
     steps:
       # Download .nupkg packages created in build job to GitHub workspace
       - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.1.0
+        uses: actions/download-artifact@v3
         with:
           # Artifact name
           name: artifact # optional
@@ -121,7 +121,7 @@ jobs:
     needs: [tag,build,deploy]
     if: failure()
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       - run: echo ${{ needs.tag.steps.bump_tag.outputs.new_tag }}
       
