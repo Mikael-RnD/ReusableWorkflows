@@ -78,8 +78,7 @@ jobs:
           orchestratorLogicalName: ${{ secrets.organizationId }} 
           projectVersion: ${{ needs.tag.outputs.release_tag }}
       
-      - name: UiPath Test
-        uses: Mikael-RnD/UiPath-Test@main
+      - uses: Mikael-RnD/UiPath-Test@main
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ secrets.orchestratorTenant }}
