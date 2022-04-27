@@ -70,8 +70,8 @@ jobs:
       - uses: Mikael-RnD/UiPath-Pack-Analyze@app-id-auth
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ secrets.OrchestratorTenant }}
-          orchestratorFolder: ${{ inputs.OrchestratorFolder }}
+          orchestratorTenant: ${{ secrets.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
           orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
           orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
           orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
