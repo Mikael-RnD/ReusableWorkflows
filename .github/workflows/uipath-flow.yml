@@ -78,6 +78,17 @@ jobs:
           orchestratorLogicalName: ${{ secrets.organizationId }} 
           projectVersion: ${{ needs.tag.outputs.release_tag }}
       
+      - name: UiPath Test
+        uses: Mikael-RnD/UiPath-Test@main
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ secrets.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ secrets.organizationId }} 
+          
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v3
         with:
