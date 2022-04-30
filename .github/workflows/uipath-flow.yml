@@ -65,7 +65,7 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       
-      - uses: Mikael-RnD/UiPath-Setup@main
+      - uses: Mikael-RnD/UiPath-Setup-JS@main
       
       - uses: Mikael-RnD/UiPath-Pack-Analyze@app-id-auth
         with:
