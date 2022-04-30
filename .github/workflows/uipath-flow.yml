@@ -67,7 +67,7 @@ jobs:
       
       - uses: Mikael-RnD/UiPath-Setup-JS@main
       
-      - uses: Mikael-RnD/UiPath-Pack-Analyze@app-id-auth
+      - uses: Mikael-RnD/UiPath-Pack-Analyze@main
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ secrets.orchestratorTenant }}
@@ -78,15 +78,15 @@ jobs:
           orchestratorLogicalName: ${{ secrets.organizationId }} 
           projectVersion: ${{ needs.tag.outputs.release_tag }}
       
-      - uses: Mikael-RnD/UiPath-Test@main
-        with:
-          orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ secrets.orchestratorTenant }}
-          orchestratorFolder: ${{ inputs.orchestratorFolder }}
-          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
-          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
-          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
-          orchestratorLogicalName: ${{ secrets.organizationId }} 
+      #- uses: Mikael-RnD/UiPath-Test@main
+      #  with:
+      #    orchestratorUrl: ${{ inputs.orchestratorUrl }}
+      #    orchestratorTenant: ${{ secrets.orchestratorTenant }}
+      #    orchestratorFolder: ${{ inputs.orchestratorFolder }}
+      #    orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+      #    orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+      #    orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
+      #    orchestratorLogicalName: ${{ secrets.organizationId }} 
           
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v3
@@ -114,7 +114,7 @@ jobs:
       # .nupkg packages are deployed to UiPath Orchestrator
       - name: UiPath Deploy
         if: ${{ github.event_name == 'push' }}
-        uses: Mikael-RnD/UiPath-Deploy@app-id-auth
+        uses: Mikael-RnD/UiPath-Deploy@main
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ secrets.orchestratorTenant }}
