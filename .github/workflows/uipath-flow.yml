@@ -26,6 +26,26 @@ on:
         required: true
 
 jobs:
+  # This workflow contains a single job called "build"
+  analyze:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      
+      - uses: Mikael-RnD/setup-uipath@main
+      
+      - uses: Mikael-RnD/UiPath-Analyze@main
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ secrets.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ secrets.organizationId }} 
+
   check-dependencies:
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +56,7 @@ jobs:
       
   tag:
     runs-on: ubuntu-latest
-    needs: check-dependencies
+    needs: [check-dependencies,analyze]
     outputs: 
       release_tag: ${{ steps.bump_tag.outputs.new_tag }}
       release_upload_url: ${{ steps.automatic_release.outputs.upload_url }}
@@ -76,7 +96,7 @@ jobs:
       
       - uses: Mikael-RnD/setup-uipath@main
       
-      - uses: Mikael-RnD/UiPath-Pack-Analyze@main
+      - uses: Mikael-RnD/UiPath-Pack@main
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ secrets.orchestratorTenant }}
