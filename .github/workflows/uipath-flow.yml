@@ -47,6 +47,7 @@ jobs:
           orchestratorLogicalName: ${{ secrets.organizationId }} 
 
   check-dependencies:
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -57,7 +58,6 @@ jobs:
   tag:
     runs-on: ubuntu-latest
     needs: [check-dependencies,analyze]
-    if: ${{ always() && needs.analyze.status == 'success' }}
     outputs: 
       release_tag: ${{ steps.bump_tag.outputs.new_tag }}
       release_upload_url: ${{ steps.automatic_release.outputs.upload_url }}
