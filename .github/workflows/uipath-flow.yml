@@ -84,7 +84,28 @@ jobs:
           automatic_release_tag: ${{ steps.bump_tag.outputs.new_tag }}
           prerelease: ${{ github.event_name != 'push' }}
       - run: echo ${{ steps.automatic_release.outputs.upload_url }}
+ 
+ # Run unit tests in project
+  test:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
       
+      - uses: Mikael-RnD/setup-uipath@main
+      
+      - uses: Mikael-RnD/UiPath-Test@main
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ secrets.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ secrets.organizationId }} 
+          
+          
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
