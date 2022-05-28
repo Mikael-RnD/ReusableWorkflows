@@ -74,6 +74,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: false
 
+      - run: echo new_tag ${{ steps.bump_tag.outputs.new_tag }} tag ${{ steps.bump_tag.outputs.tag }}
+
       - name: Automatic Releases
         id: automatic_release
         uses: marvinpinto/action-automatic-releases@v1.2.1
