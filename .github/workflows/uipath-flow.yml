@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [check-dependencies,analyze]
     outputs: 
-      release_tag: ${{ steps.bump_tag.outputs.new_tag }}
+      release_tag: ${{ steps.bump_tag.outputs.new_version }}
       release_upload_url: ${{ steps.automatic_release.outputs.upload_url }}
     steps: 
       - uses: actions/checkout@v3
