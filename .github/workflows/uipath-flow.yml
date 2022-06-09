@@ -67,25 +67,18 @@ jobs:
         
       - run: echo Triggered by ${{ github.event_name }} event  
         
-      - name: Github Tag Bump
-        id: bump_tag
-        uses: anothrNick/github-tag-action@1.36.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: false
-
-      - run: echo new_tag ${{ steps.bump_tag.outputs.new_tag }} tag ${{ steps.bump_tag.outputs.tag }}
-
-      - name: Automatic Releases
-        id: automatic_release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
+      - id: bump_tag
+        name: Github Tag with semantic versioning
+      # You may pin to the exact commit or the version.
+      # uses: hennejg/github-tag-action@2cd21a8413aa58e36a69cb22e64d5ad20aeb9b99
+        uses: hennejg/github-tag-action@v4.3.1
         with:
-          # GitHub secret token
-          repo_token: ${{ secrets.GITHUB_TOKEN}}
-              # Git tag (for automatic releases)
-          automatic_release_tag: ${{ steps.bump_tag.outputs.new_tag }}
-          prerelease: ${{ github.event_name != 'push' }}
-      - run: echo ${{ steps.automatic_release.outputs.upload_url }}
+          # Required for permission to tag the repo.
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Comma separated list of branches (bash reg exp accepted) that will generate the release tags. Other branches and pull-requests generate versions postfixed with the commit hash and do not generate any tag. Examples: `master` or `.*` or `release.*,hotfix.*,master`...
+          release_branches: "main,master"
+
+      #- run: echo new_tag ${{ steps.bump_tag.outputs.new_tag }} tag ${{ steps.bump_tag.outputs.tag }}
  
  # Run unit tests in project
   test:
