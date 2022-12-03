@@ -69,14 +69,10 @@ jobs:
         
       - id: bump_tag
         name: Github Tag with semantic versioning
-      # You may pin to the exact commit or the version.
-      # uses: hennejg/github-tag-action@2cd21a8413aa58e36a69cb22e64d5ad20aeb9b99
-        uses: hennejg/github-tag-action@v4.3.1
+        uses: mikael-andersson91/github-tag-action@master
         with:
-          # Required for permission to tag the repo.
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # Comma separated list of branches (bash reg exp accepted) that will generate the release tags. Other branches and pull-requests generate versions postfixed with the commit hash and do not generate any tag. Examples: `master` or `.*` or `release.*,hotfix.*,master`...
-          release_branches: "main,master"
+          release_branches: main,master
 
       #- run: echo new_tag ${{ steps.bump_tag.outputs.new_tag }} tag ${{ steps.bump_tag.outputs.tag }}
  
