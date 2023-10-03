@@ -1,0 +1,75 @@
+# This is a basic workflow to help you get started with Actions
+
+name: UiPath Tests
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on call from other repository
+  workflow_call:
+    inputs:
+      orchestratorUrl:
+        required: true
+        type: string
+      orchestratorFolder:
+        required: true
+        type: string
+      orchestratorTenant:
+        type: string
+      orchestratorApplicationScope:
+        type: string
+      organizationId:
+        type: string
+      environment:
+        type: string
+    secrets:
+      orchestratorApplicationId:
+        required: true
+      orchestratorApplicationSecret:
+        required: true
+
+
+jobs:
+  # Run workflow analysis
+  analyze:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: Mikael-RnD/setup-uipath@v1
+      
+      - uses: Mikael-RnD/UiPath-Analyze@main
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ inputs.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ inputs.organizationId }} 
+
+ 
+ # Run unit tests in project
+  test:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - uses: Mikael-RnD/setup-uipath@v1
+      
+      - uses: Mikael-RnD/UiPath-Test@main
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ inputs.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ inputs.organizationId }} 
