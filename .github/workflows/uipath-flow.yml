@@ -7,56 +7,47 @@ on:
   # Triggers the workflow on call from other repository
   workflow_call:
     inputs:
+      environment: 
+        required: true
+        type: string
       orchestratorUrl:
         required: true
         type: string
       orchestratorFolder:
         required: true
         type: string
-    secrets:
       orchestratorTenant:
         required: true
+        type: string
+      organizationId:
+        required: true
+        type: string
+      orchestratorApplicationScope:
+        required: true
+        type: string
+    secrets:
       orchestratorApplicationId:
         required: true
       orchestratorApplicationSecret:
         required: true
-      orchestratorApplicationScope:
-        required: true
-      organizationId:
-        required: true
 
 jobs:
-  # This workflow contains a single job called "build"
-  analyze:
-    # The type of runner that the job will run on
-    runs-on: windows-latest
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      
-      - uses: Mikael-RnD/setup-uipath@main
-      
-      - uses: Mikael-RnD/UiPath-Analyze@main
-        with:
-          orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ secrets.orchestratorTenant }}
-          orchestratorFolder: ${{ inputs.orchestratorFolder }}
-          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
-          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
-          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
-          orchestratorLogicalName: ${{ secrets.organizationId }} 
-
-  check-dependencies:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: '0'
-      - uses: Mikael-RnD/uipath-check-prerelease-dependencies@main
+  uipath-tests:
+    uses: ./.github/workflows/uipath-tests.yml
+    with:
+      environment: ${{ inputs.environment }}
+      orchestratorUrl: ${{ inputs.orchestratorUrl }}
+      orchestratorTenant: ${{ inputs.orchestratorTenant }}
+      orchestratorFolder: ${{ inputs.orchestratorFolder }}
+      organizationId: ${{ inputs.organizationId }}
+      orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+    secrets:
+      orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+      orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
       
   tag:
     runs-on: ubuntu-latest
-    needs: [check-dependencies,analyze]
+    needs: [uipath-tests]
     outputs: 
       release_tag: ${{ steps.bump_tag.outputs.new_version }}
       release_upload_url: ${{ steps.automatic_release.outputs.upload_url }}
@@ -70,36 +61,12 @@ jobs:
       - id: bump_tag
         name: Github Tag with semantic versioning
       # You may pin to the exact commit or the version.
-      # uses: hennejg/github-tag-action@2cd21a8413aa58e36a69cb22e64d5ad20aeb9b99
-        uses: hennejg/github-tag-action@v4.3.1
+        uses: hennejg/github-tag-action@v4.4.0
         with:
           # Required for permission to tag the repo.
           github_token: ${{ secrets.GITHUB_TOKEN }}
           # Comma separated list of branches (bash reg exp accepted) that will generate the release tags. Other branches and pull-requests generate versions postfixed with the commit hash and do not generate any tag. Examples: `master` or `.*` or `release.*,hotfix.*,master`...
           release_branches: "main,master"
-
-      #- run: echo new_tag ${{ steps.bump_tag.outputs.new_tag }} tag ${{ steps.bump_tag.outputs.tag }}
- 
- # Run unit tests in project
-  test:
-    # The type of runner that the job will run on
-    runs-on: windows-latest
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-      
-      - uses: Mikael-RnD/setup-uipath@main
-      
-      - uses: Mikael-RnD/UiPath-Test@main
-        with:
-          orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ secrets.orchestratorTenant }}
-          orchestratorFolder: ${{ inputs.orchestratorFolder }}
-          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
-          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
-          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
-          orchestratorLogicalName: ${{ secrets.organizationId }} 
-          
           
   # This workflow contains a single job called "build"
   build:
@@ -115,23 +82,14 @@ jobs:
       - uses: Mikael-RnD/UiPath-Pack@main
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ secrets.orchestratorTenant }}
+          orchestratorTenant: ${{ inputs.organizationId }}
           orchestratorFolder: ${{ inputs.orchestratorFolder }}
           orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
           orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
-          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
-          orchestratorLogicalName: ${{ secrets.organizationId }} 
+          orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ inputs.organizationId }} 
           projectVersion: ${{ needs.tag.outputs.release_tag }}
       
-      #- uses: Mikael-RnD/UiPath-Test@main
-      #  with:
-      #    orchestratorUrl: ${{ inputs.orchestratorUrl }}
-      #    orchestratorTenant: ${{ secrets.orchestratorTenant }}
-      #    orchestratorFolder: ${{ inputs.orchestratorFolder }}
-      #    orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
-      #    orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
-      #    orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
-      #    orchestratorLogicalName: ${{ secrets.organizationId }} 
           
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v3
@@ -158,48 +116,12 @@ jobs:
       
       # .nupkg packages are deployed to UiPath Orchestrator
       - name: UiPath Deploy
-        if: ${{ github.event_name == 'push' }}
         uses: Mikael-RnD/UiPath-Deploy@main
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ secrets.orchestratorTenant }}
+          orchestratorTenant: ${{ inputs.orchestratorTenant }}
           orchestratorFolder: ${{ inputs.orchestratorFolder }}
           orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
           orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
-          orchestratorApplicationScope: ${{ secrets.orchestratorApplicationScope }}
-          orchestratorLogicalName: ${{ secrets.organizationId }} 
-  
-  failed_build:
-    runs-on: ubuntu-latest
-    needs: [tag,build,deploy]
-    if: failure()
-    steps:
-      - uses: actions/checkout@v3
-      
-      - run: echo ${{ needs.tag.steps.bump_tag.outputs.new_tag }}
-      
-      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
-        with:
-          delete_release: true # default: false
-          tag_name: ${{ needs.tag.outputs.release_tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-  successful_build:
-    runs-on: ubuntu-latest
-    needs: [tag,deploy]
-    if: success()
-    steps:
-    
-      - name: Download a Build Artifact
-        uses: actions/download-artifact@v2.1.0
-        with:
-          # Artifact name
-          name: artifact # optional
-          # Destination path
-          path: ${{github.workspace}} # optional
-          
-      # TODO: Find out how to use the upload URL to add packages?
-      - run: echo ${{ needs.tag.outputs.release_upload_url }}
-      
-
+          orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ inputs.organizationId }} 

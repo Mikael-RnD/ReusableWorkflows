@@ -56,7 +56,6 @@ jobs:
  # Run unit tests in project
   test:
     environment: ${{ inputs.environment }}
-    # The type of runner that the job will run on
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -75,3 +74,12 @@ jobs:
           orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
           orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
           orchestratorLogicalName: ${{ inputs.organizationId }} 
+
+  check-dependencies:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: Mikael-RnD/uipath-check-prerelease-dependencies@main
