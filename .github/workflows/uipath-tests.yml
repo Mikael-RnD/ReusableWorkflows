@@ -31,6 +31,7 @@ on:
 jobs:
   # Run workflow analysis
   analyze:
+    environment: ${{ inputs.environment }}
     # The type of runner that the job will run on
     runs-on: windows-latest
     steps:
@@ -41,7 +42,7 @@ jobs:
       
       - uses: Mikael-RnD/setup-uipath@v1
       
-      - uses: Mikael-RnD/UiPath-Analyze@main
+      - uses: Mikael-RnD/UiPath-Analyze@v0
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ inputs.orchestratorTenant }}
@@ -54,6 +55,7 @@ jobs:
  
  # Run unit tests in project
   test:
+    environment: ${{ inputs.environment }}
     # The type of runner that the job will run on
     runs-on: windows-latest
     steps:
@@ -64,7 +66,7 @@ jobs:
       
       - uses: Mikael-RnD/setup-uipath@v1
       
-      - uses: Mikael-RnD/UiPath-Test@main
+      - uses: Mikael-RnD/UiPath-Test@v0
         with:
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ inputs.orchestratorTenant }}
