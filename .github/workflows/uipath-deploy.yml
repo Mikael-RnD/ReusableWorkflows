@@ -1,0 +1,94 @@
+name: UiPath Deploy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on call from other repository
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+      orchestratorUrl:
+        required: true
+        type: string
+      orchestratorFolder:
+        required: true
+        type: string
+      orchestratorTenant:
+        type: string
+      orchestratorApplicationScope:
+        type: string
+      organizationId:
+        type: string
+      environment:
+        type: string
+    secrets:
+      orchestratorApplicationId:
+        required: true
+      orchestratorApplicationSecret:
+        required: true
+
+jobs:
+
+pack:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+      
+      - uses: Mikael-RnD/setup-uipath@v1
+      
+      - uses: Mikael-RnD/UiPath-Pack@v0
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ inputs.organizationId }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ inputs.organizationId }} 
+          projectVersion: ${{ inputs.tag }}
+      
+          
+      # Upload packages as build artifacts to be handled by deploy job
+      - uses: actions/upload-artifact@v3
+        with:
+          path: ${{ github.workspace }}/packages
+          if-no-files-found: error
+          retention-days: 90
+      
+  deploy:
+    needs: pack
+    environment: ${{ inputs.environment }}
+    runs-on: windows-latest
+    steps:
+      # Download .nupkg packages created in build job to GitHub workspace
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3
+        with:
+          # Artifact name
+          name: artifact # optional
+          # Destination path
+          path: ${{github.workspace}} 
+      
+      # The UiPath CLI is installed on Runner
+      - uses: Mikael-RnD/setup-uipath@v1
+      
+      # .nupkg packages are deployed to UiPath Orchestrator
+      - name: UiPath Deploy
+        uses: Mikael-RnD/UiPath-Deploy@v1
+        with:
+          orchestratorUrl: ${{ inputs.orchestratorUrl }}
+          orchestratorTenant: ${{ inputs.orchestratorTenant }}
+          orchestratorFolder: ${{ inputs.orchestratorFolder }}
+          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+          orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+          orchestratorLogicalName: ${{ inputs.organizationId }} 
