@@ -23,8 +23,6 @@ on:
         type: string
       organizationId:
         type: string
-      environment:
-        type: string
     secrets:
       orchestratorApplicationId:
         required: true
