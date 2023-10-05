@@ -33,37 +33,37 @@ on:
 
 jobs:
 
-pack:
-    # The type of runner that the job will run on
-    runs-on: windows-latest
-    environment: ${{ inputs.environment }}
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-        with:
-            fetch-depth: 0
-      
-      - uses: Mikael-RnD/setup-uipath@v1
-      
-      - uses: Mikael-RnD/UiPath-Pack@v0
-        with:
-          orchestratorUrl: ${{ inputs.orchestratorUrl }}
-          orchestratorTenant: ${{ inputs.organizationId }}
-          orchestratorFolder: ${{ inputs.orchestratorFolder }}
-          orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
-          orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
-          orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
-          orchestratorLogicalName: ${{ inputs.organizationId }} 
-          projectVersion: ${{ inputs.tag }}
-      
-          
-      # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ${{ github.workspace }}/packages
-          if-no-files-found: error
-          retention-days: 90
-      
+  pack:
+      # The type of runner that the job will run on
+      runs-on: windows-latest
+      environment: ${{ inputs.environment }}
+      steps:
+        # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+        - uses: actions/checkout@v4
+          with:
+              fetch-depth: 0
+        
+        - uses: Mikael-RnD/setup-uipath@v1
+        
+        - uses: Mikael-RnD/UiPath-Pack@v0
+          with:
+            orchestratorUrl: ${{ inputs.orchestratorUrl }}
+            orchestratorTenant: ${{ inputs.organizationId }}
+            orchestratorFolder: ${{ inputs.orchestratorFolder }}
+            orchestratorApplicationId: ${{ secrets.orchestratorApplicationId }}
+            orchestratorApplicationSecret: ${{ secrets.orchestratorApplicationSecret }}
+            orchestratorApplicationScope: ${{ inputs.orchestratorApplicationScope }}
+            orchestratorLogicalName: ${{ inputs.organizationId }} 
+            projectVersion: ${{ inputs.tag }}
+        
+            
+        # Upload packages as build artifacts to be handled by deploy job
+        - uses: actions/upload-artifact@v3
+          with:
+            path: ${{ github.workspace }}/packages
+            if-no-files-found: error
+            retention-days: 90
+                
   deploy:
     needs: pack
     environment: ${{ inputs.environment }}
