@@ -107,6 +107,7 @@ jobs:
     needs: tag
     uses: ./.github/workflows/uipath-deploy.yml
     with: 
+      environment: ${{ inputs.environment }}
       tag: ${{ needs.tag.outputs.new_version }}
       orchestratorUrl: ${{ inputs.orchestratorUrl }}
       orchestratorTenant: ${{ inputs.orchestratorTenant }}
@@ -123,7 +124,7 @@ jobs:
     needs: [tag, deploy]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
