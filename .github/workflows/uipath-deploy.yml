@@ -43,7 +43,7 @@ jobs:
         
         - uses: Mikael-RnD/setup-uipath@v1
         
-        - uses: Mikael-RnD/UiPath-Pack@v0
+        - uses: Mikael-RnD/UiPath-Pack@v1
           with:
             orchestratorUrl: ${{ inputs.orchestratorUrl }}
             orchestratorTenant: ${{ inputs.organizationId }}
