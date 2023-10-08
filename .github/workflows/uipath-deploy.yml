@@ -63,6 +63,7 @@ jobs:
         # Upload packages as build artifacts to be handled by deploy job
         - uses: actions/upload-artifact@v3
           with:
+            name: ${{ inputs.environment }}-packages
             path: ${{ steps.pack.outputs.packagesPath }}
             if-no-files-found: error
             retention-days: 90
@@ -77,7 +78,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           # Artifact name
-          name: artifact # optional
+          name: ${{ inputs.environment }}-packages
           # Destination path
           path: ${{github.workspace}} 
       
