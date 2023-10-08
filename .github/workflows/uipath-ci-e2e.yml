@@ -10,6 +10,9 @@ on:
       environment: 
         required: true
         type: string
+      projectFilePaths: 
+        required: false
+        type: string
       orchestratorUrl:
         required: true
         type: string
@@ -36,6 +39,7 @@ jobs:
     uses: ./.github/workflows/uipath-tests.yml
     with:
       environment: ${{ inputs.environment }}
+      projectFilePaths: ${{ inputs.projectFilePaths }}
       orchestratorUrl: ${{ inputs.orchestratorUrl }}
       orchestratorTenant: ${{ inputs.orchestratorTenant }}
       orchestratorFolder: ${{ inputs.orchestratorFolder }}
@@ -109,6 +113,7 @@ jobs:
     with: 
       environment: ${{ inputs.environment }}
       tag: ${{ needs.tag.outputs.new_version }}
+      projectFilePaths: ${{ inputs.projectFilePaths }}
       orchestratorUrl: ${{ inputs.orchestratorUrl }}
       orchestratorTenant: ${{ inputs.orchestratorTenant }}
       orchestratorFolder: ${{ inputs.orchestratorFolder }}

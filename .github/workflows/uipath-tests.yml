@@ -7,6 +7,9 @@ on:
   # Triggers the workflow on call from other repository
   workflow_call:
     inputs:
+      projectFilePaths: 
+        required: false
+        type: string
       orchestratorUrl:
         required: true
         type: string
@@ -44,6 +47,7 @@ jobs:
       
       - uses: Mikael-RnD/UiPath-Analyze@v0
         with:
+          projectFilePaths: ${{ inputs.projectFilePaths }}
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ inputs.orchestratorTenant }}
           orchestratorFolder: ${{ inputs.orchestratorFolder }}
@@ -67,6 +71,7 @@ jobs:
       
       - uses: Mikael-RnD/UiPath-Test@v0
         with:
+          projectFilePaths: ${{ inputs.projectFilePaths }}
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ inputs.orchestratorTenant }}
           orchestratorFolder: ${{ inputs.orchestratorFolder }}

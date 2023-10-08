@@ -11,6 +11,9 @@ on:
       tag:
         required: true
         type: string
+      projectFilePaths: 
+        required: false
+        type: string
       orchestratorUrl:
         required: true
         type: string
@@ -43,8 +46,10 @@ jobs:
         
         - uses: Mikael-RnD/setup-uipath@v1
         
-        - uses: Mikael-RnD/UiPath-Pack@v1
+        - id: pack
+          uses: Mikael-RnD/UiPath-Pack@v1
           with:
+            projectFilePaths: ${{ inputs.projectFilePaths }}
             orchestratorUrl: ${{ inputs.orchestratorUrl }}
             orchestratorTenant: ${{ inputs.organizationId }}
             orchestratorFolder: ${{ inputs.orchestratorFolder }}
@@ -58,7 +63,7 @@ jobs:
         # Upload packages as build artifacts to be handled by deploy job
         - uses: actions/upload-artifact@v3
           with:
-            path: ${{ github.workspace }}/packages
+            path: ${{ steps.pack.outputs.packagesPath }}
             if-no-files-found: error
             retention-days: 90
                 
