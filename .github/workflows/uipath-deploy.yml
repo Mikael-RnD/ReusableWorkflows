@@ -88,6 +88,7 @@ jobs:
       - name: UiPath Deploy
         uses: Mikael-RnD/UiPath-Deploy@v1
         with:
+          packagesPath: ${{ github.workspace }}
           orchestratorUrl: ${{ inputs.orchestratorUrl }}
           orchestratorTenant: ${{ inputs.orchestratorTenant }}
           orchestratorFolder: ${{ inputs.orchestratorFolder }}
